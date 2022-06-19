@@ -56,6 +56,7 @@ const addBookHandler = (request, h) => {
       message: 'Buku berhasil ditambahkan',
       data: {
         bookId: id,
+        bookData: newBook,
       },
     });
     response.code(201);
@@ -72,26 +73,33 @@ const addBookHandler = (request, h) => {
 
 const getAllBooksHandler = (request, h) => {
   const resBooks = [];
-  let booksFiltered;
-  if (request.query.name) {
-    booksFiltered = books.filter((b) => b.name === request.query.name);
+  const {
+    name,
+    reading,
+    finished,
+  } = request.query;
+
+  let booksFiltered = books;
+  if (name) {
+    booksFiltered = books.filter((b) => b.name.toUpperCase().includes(name.toUpperCase()));
   }
 
-  if (request.query.reading) {
-    booksFiltered = books.filter((b) => b.reading === request.query.reading);
+  if (reading) {
+    booksFiltered = books.filter((b) => b.reading == reading);
   }
 
-  if (request.query.finished) {
-    booksFiltered = books.filter((b) => b.finished === request.query.finished);
+  if (finished) {
+    booksFiltered = books.filter((b) => b.finished == finished);
   }
-  booksFiltered = books;
-  booksFiltered.forEach((bookFiltered) => {
+  console.log(booksFiltered);
+
+  for (let i = 0; i < booksFiltered.length; i++) {
     const bookObj = {};
-    bookObj.id = bookFiltered.id;
-    bookObj.name = bookFiltered.name;
-    bookObj.publisher = bookFiltered.publisher;
+    bookObj.id = booksFiltered[i].id;
+    bookObj.name = booksFiltered[i].name;
+    bookObj.publisher = booksFiltered[i].publisher;
     resBooks.push(bookObj);
-  });
+  }
 
   const response = h.response({
     status: 'success',
